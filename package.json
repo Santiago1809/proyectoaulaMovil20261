@@ -1,7 +1,7 @@
 {
   "name": "clase_2",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -15,8 +15,8 @@
     "expo": "~55.0.4",
     "expo-status-bar": "~55.0.4",
     "firebase": "^12.10.0",
-    "react": "19.2.3",
-    "react-native": "0.84.1",
+    "react": "19.2.0",
+    "react-native": "0.83.2",
     "react-native-webview": "13.16.0"
   },
   "private": true

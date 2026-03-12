@@ -1,36 +1,23 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
-import { auth } from "./firebase";
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import Login from "./screens/Login";
+import Register from "./screens/Register";
+import Home from "./screens/Home";
+import Details from "./screens/Details";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSignUp = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.info("Usuario registrado:", userCredential.user);
-      })
-      .catch((error) => console.log("Error:", error.message));
-  };
   return (
-    <View style={{ padding: 20 }}>
-      <Text>Email:</Text>
-      <TextInput
-        onChangeText={setEmail}
-        style={{ borderWidth: 1, marginBottom: 10 }}
-      />
-      <Text>Contraseña:</Text>
-      <TextInput
-        secureTextEntry
-        onChangeText={setPassword}
-        style={{
-          borderWidth: 1,
-          marginBottom: 10,
-        }}
-      />
-      <Button title="Registrarse" onPress={handleSignUp} />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Details" component={Details} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
