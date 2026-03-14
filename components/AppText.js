@@ -7,7 +7,13 @@ const weightToFont = {
   bold: "Poppins_700Bold",
 };
 
-export default function AppText({ children, size = 16, weight = "regular", style, ...props }) {
+export default function AppText({
+  children,
+  size = 16,
+  weight = "regular",
+  style,
+  ...props
+}) {
   const fontFamily = weightToFont[weight] || weightToFont.regular;
   return (
     <Text style={[{ fontFamily, fontSize: size }, style]} {...props}>
