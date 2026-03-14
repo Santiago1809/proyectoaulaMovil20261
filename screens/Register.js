@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { ScrollView, View, TextInput, Alert } from "react-native";
+import { Heading, Body, PrimaryButton } from "../components/UI";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -13,38 +14,37 @@ export default function Register({ navigation }) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("Usuario registrado:", userCredential.user);
-        navigation.replace("Home");
+        // AuthContext will detect the new user and RootRoutes will switch stacks
       })
       .catch((error) => Alert.alert("Error", error.message));
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ marginBottom: 6 }}>Email:</Text>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 20, backgroundColor: "#ffffff", flexGrow: 1, justifyContent: "center" }}>
+      <Heading style={{ marginBottom: 6 }}>Correo electrónico</Heading>
       <TextInput
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        style={{ borderWidth: 1, padding: 8, marginBottom: 12 }}
+        style={{ borderWidth: 1, padding: 12, marginBottom: 12, borderColor: "#dfeee0", borderRadius: 8 }}
       />
 
-      <Text style={{ marginBottom: 6 }}>Contraseña:</Text>
+      <Heading style={{ marginBottom: 6 }}>Contraseña</Heading>
       <TextInput
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={{ borderWidth: 1, padding: 8, marginBottom: 12 }}
+        style={{ borderWidth: 1, padding: 12, marginBottom: 18, borderColor: "#dfeee0", borderRadius: 8 }}
       />
 
-      <Button title="Registrarse" onPress={handleSignUp} />
+      <PrimaryButton title="Registrarse" onPress={handleSignUp} />
 
       <View style={{ marginTop: 12 }}>
-        <Button
-          title="¿Ya tienes cuenta? Iniciar sesión"
-          onPress={() => navigation.navigate("Login")}
-        />
+        <Body style={{ textAlign: "center" }} onPress={() => navigation.navigate("Login")}>
+          ¿Ya tienes cuenta? Iniciar sesión
+        </Body>
       </View>
-    </View>
+    </ScrollView>
   );
 }

@@ -42,3 +42,5 @@ yarn-error.*
 /android
 
 .env
+.agents
+skills-lock.json

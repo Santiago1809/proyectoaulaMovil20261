@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { ScrollView, View, TextInput, Alert } from "react-native";
+import { Heading, Body, PrimaryButton } from "../components/UI";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -13,7 +14,7 @@ export default function Login({ navigation }) {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("Usuario logueado:", userCredential.user);
-        navigation.replace("Home");
+        // auth state is handled by AuthContext; RootRoutes will switch stacks
       })
       .catch((error) => {
         console.error("Error al iniciar sesión:", error);
@@ -22,32 +23,29 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ marginBottom: 6 }}>Email:</Text>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 20, backgroundColor: "#ffffff", flexGrow: 1, justifyContent: "center" }}>
+      <Heading style={{ marginBottom: 6 }}>Correo electrónico</Heading>
       <TextInput
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        style={{ borderWidth: 1, padding: 8, marginBottom: 12 }}
+        style={{ borderWidth: 1, padding: 12, marginBottom: 12, borderColor: "#dfeee0", borderRadius: 8 }}
       />
 
-      <Text style={{ marginBottom: 6 }}>Contraseña:</Text>
+      <Heading style={{ marginBottom: 6 }}>Contraseña</Heading>
       <TextInput
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={{ borderWidth: 1, padding: 8, marginBottom: 12 }}
+        style={{ borderWidth: 1, padding: 12, marginBottom: 18, borderColor: "#dfeee0", borderRadius: 8 }}
       />
 
-      <Button title="Iniciar sesión" onPress={handleSignIn} />
+      <PrimaryButton title="Iniciar sesión" onPress={handleSignIn} />
 
       <View style={{ marginTop: 12 }}>
-        <Button
-          title="¿No tienes cuenta? Registrarse"
-          onPress={() => navigation.navigate("Register")}
-        />
+        <Body style={{ textAlign: "center", marginTop: 12 }} onPress={() => navigation.navigate("Register")}>Crear cuenta</Body>
       </View>
-    </View>
+    </ScrollView>
   );
 }

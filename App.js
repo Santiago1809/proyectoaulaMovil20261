@@ -6,18 +6,41 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Home from "./screens/Home";
 import Details from "./screens/Details";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-const Stack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
+const MainStack = createNativeStackNavigator();
+
+function AuthStackScreen() {
+  return (
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+      <AuthStack.Screen name="Login" component={Login} />
+      <AuthStack.Screen name="Register" component={Register} />
+    </AuthStack.Navigator>
+  );
+}
+
+function MainStackScreen() {
+  return (
+    <MainStack.Navigator screenOptions={{ headerShown: false }}>
+      <MainStack.Screen name="Home" component={Home} />
+      <MainStack.Screen name="Details" component={Details} />
+    </MainStack.Navigator>
+  );
+}
+
+function RootRoutes() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <MainStackScreen /> : <AuthStackScreen />;
+}
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Details" component={Details} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <RootRoutes />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
