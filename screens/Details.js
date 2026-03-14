@@ -7,17 +7,32 @@ export default function Details({ route }) {
 
   if (!book) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#ffffff" }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#ffffff",
+        }}
+      >
         <Body>No hay detalles para este libro.</Body>
       </View>
     );
   }
 
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, backgroundColor: "#ffffff" }} contentContainerStyle={{ padding: 16 }}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={{ flex: 1, backgroundColor: "#ffffff" }}
+      contentContainerStyle={{ padding: 16 }}
+    >
       <Card style={{ overflow: "hidden" }}>
         {book.image ? (
-          <Image source={{ uri: book.image }} style={{ width: "100%", height: 380 }} resizeMode="cover" />
+          <Image
+            source={{ uri: book.image }}
+            style={{ width: "100%", height: 380 }}
+            resizeMode="cover"
+          />
         ) : null}
         <View style={{ padding: 12 }}>
           <Heading>{book.title}</Heading>

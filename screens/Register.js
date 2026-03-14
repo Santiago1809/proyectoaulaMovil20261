@@ -10,7 +10,7 @@ export default function Register({ navigation }) {
 
   const handleSignUp = () => {
     if (!email || !password) return Alert.alert("Error", "Completa los campos");
-    console.log({email, password})
+    console.log({ email, password });
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("Usuario registrado:", userCredential.user);
@@ -20,14 +20,28 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 20, backgroundColor: "#ffffff", flexGrow: 1, justifyContent: "center" }}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{
+        padding: 20,
+        backgroundColor: "#ffffff",
+        flexGrow: 1,
+        justifyContent: "center",
+      }}
+    >
       <Heading style={{ marginBottom: 6 }}>Correo electrónico</Heading>
       <TextInput
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        style={{ borderWidth: 1, padding: 12, marginBottom: 12, borderColor: "#dfeee0", borderRadius: 8 }}
+        style={{
+          borderWidth: 1,
+          padding: 12,
+          marginBottom: 12,
+          borderColor: "#dfeee0",
+          borderRadius: 8,
+        }}
       />
 
       <Heading style={{ marginBottom: 6 }}>Contraseña</Heading>
@@ -35,13 +49,22 @@ export default function Register({ navigation }) {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={{ borderWidth: 1, padding: 12, marginBottom: 18, borderColor: "#dfeee0", borderRadius: 8 }}
+        style={{
+          borderWidth: 1,
+          padding: 12,
+          marginBottom: 18,
+          borderColor: "#dfeee0",
+          borderRadius: 8,
+        }}
       />
 
       <PrimaryButton title="Registrarse" onPress={handleSignUp} />
 
       <View style={{ marginTop: 12 }}>
-        <Body style={{ textAlign: "center" }} onPress={() => navigation.navigate("Login")}>
+        <Body
+          style={{ textAlign: "center" }}
+          onPress={() => navigation.navigate("Login")}
+        >
           ¿Ya tienes cuenta? Iniciar sesión
         </Body>
       </View>
