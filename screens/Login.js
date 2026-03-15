@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ScrollView, View, TextInput, Alert } from "react-native";
+import NetInfo from "@react-native-community/netinfo";
 import { Heading, Body, PrimaryButton } from "../components";
 import useAuthActions from "../hooks/useAuthActions";
 
@@ -9,14 +10,26 @@ export default function Login({ navigation }) {
 
   const { signIn } = useAuthActions();
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!email || !password) return Alert.alert("Error", "Completa los campos");
-    signIn(email, password)
-      .then(() => {})
-      .catch((error) => {
-        console.error("Error al iniciar sesión:", error);
-        Alert.alert("Error", error.message);
-      });
+
+    try {
+      const state = await NetInfo.fetch();
+      if (!state.isConnected) {
+        return Alert.alert(
+          "Sin conexión",
+          "Revisa tu Internet e intenta de nuevo.",
+        );
+      }
+
+      await signIn(email, password);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      Alert.alert(
+        "Error",
+        error.message || "Ocurrió un problema al iniciar sesión",
+      );
+    }
   };
 
   return (

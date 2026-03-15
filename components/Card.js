@@ -1,23 +1,56 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { colors } from "./colors";
 
-export function Card({ children, style }) {
-  return <View style={[styles.card, style]}>{children}</View>;
+export function Card({ children, style, onPress, variant = "default" }) {
+  const cardStyle = [
+    styles.card,
+    variant === "outlined" && styles.outlined,
+    variant === "elevated" && styles.elevated,
+    style,
+  ];
+
+  if (onPress) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.85}
+        style={cardStyle}
+      >
+        {children}
+      </TouchableOpacity>
+    );
+  }
+
+  return <View style={cardStyle}>{children}</View>;
 }
+
+export default Card;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 8,
-    // subtle shadow
-    shadowColor: "#0a0a0a",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.04,
-    shadowRadius: 18,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 12,
+    shadowColor: colors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
     elevation: 2,
   },
+  outlined: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  elevated: {
+    backgroundColor: colors.surface,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 4,
+  },
 });
-
-export default Card;

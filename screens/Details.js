@@ -37,6 +37,22 @@ export default function Details({ route }) {
         <View style={{ padding: 12 }}>
           <Heading>{book.title}</Heading>
           <Body style={{ marginTop: 8 }}>{book.author}</Body>
+          {/* Availability */}
+          <View style={{ marginTop: 8, marginBottom: 8 }}>
+            <View
+              style={{
+                backgroundColor: book.available ? "#10B981" : "#EF4444",
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+                borderRadius: 6,
+                alignSelf: "flex-start",
+              }}
+            >
+              <Body style={{ color: "#ffffff", fontWeight: "700" }}>
+                {book.available ? "Disponible" : "No disponible"}
+              </Body>
+            </View>
+          </View>
           <Body style={{ marginTop: 12 }}>{book.description}</Body>
         </View>
       </Card>

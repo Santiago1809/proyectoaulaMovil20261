@@ -13,7 +13,7 @@ export function Body({ children, style, ...props }) {
 const styles = StyleSheet.create({
   body: {
     fontSize: 14,
-    color: colors.muted,
+    color: colors.textMuted,
     fontFamily: "Poppins_400Regular",
   },
 });

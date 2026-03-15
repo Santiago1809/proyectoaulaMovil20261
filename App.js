@@ -6,6 +6,7 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Home from "./screens/Home";
 import Details from "./screens/Details";
+import AddBook from "./screens/AddBook";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const AuthStack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ function MainStackScreen() {
   return (
     <MainStack.Navigator screenOptions={{ headerShown: false }}>
       <MainStack.Screen name="Home" component={Home} />
+      <MainStack.Screen name="AddBook" component={AddBook} />
       <MainStack.Screen name="Details" component={Details} />
     </MainStack.Navigator>
   );

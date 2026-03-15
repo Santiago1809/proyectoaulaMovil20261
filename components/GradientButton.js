@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { colors } from "./colors";
 
-export function PrimaryButton({
+export function GradientButton({
   title,
   onPress,
   style,
@@ -18,7 +18,7 @@ export function PrimaryButton({
 }) {
   const buttonContent = () => {
     if (loading) {
-      return <ActivityIndicator color={colors.text} size="small" />;
+      return <ActivityIndicator color={colors.surface} size="small" />;
     }
     return <Text style={[styles.buttonText, textStyle]}>{title}</Text>;
   };
@@ -36,31 +36,29 @@ export function PrimaryButton({
   );
 }
 
-export default PrimaryButton;
+export default GradientButton;
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: colors.background,
-    borderColor: colors.primary,
-    borderWidth: 1,
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 12,
     alignItems: "center",
+    backgroundColor: colors.primary,
     shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
-    color: colors.primary,
+    color: colors.surface,
     fontWeight: "600",
     fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
   },
   disabled: {
     opacity: 0.6,
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.1,
   },
 });
