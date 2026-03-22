@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
   BookItem,
   HomeHeader,
 } from "../components";
+import MenuModal from "../components/MenuModal";
 import { colors } from "../components/colors";
 import useBooks from "../hooks/useBooks";
 
@@ -25,10 +26,9 @@ import useBooks from "../hooks/useBooks";
 function Home({ navigation }) {
   const { books, loading, refresh, addBook } = useBooks();
   const { width } = useWindowDimensions();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const insets = useSafeAreaInsets();
-
-  const handleSignOut = () => signOut();
+  const [menuVisible, setMenuVisible] = useState(false);
 
   // Responsive columns: 1 for narrow, 2 medium, 3 for wide
   const numColumns = width >= 900 ? 3 : width >= 600 ? 2 : 1;
@@ -88,18 +88,12 @@ function Home({ navigation }) {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: colors.background,
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <FlatList
         ListHeaderComponent={() => (
-          <HomeHeader user={user} onSignOut={handleSignOut} />
+          <HomeHeader user={user} onOpenMenu={() => setMenuVisible(true)} />
         )}
+        stickyHeaderIndices={[0]}
         ListFooterComponent={renderFooter}
         data={books}
         contentContainerStyle={{
@@ -125,6 +119,8 @@ function Home({ navigation }) {
         }
         // Show skeleton loaders while initial data is loading (handled in renderFooter)
       />
+
+      <MenuModal visible={menuVisible} onClose={() => setMenuVisible(false)} />
 
       {!loading && (
         <TouchableOpacity

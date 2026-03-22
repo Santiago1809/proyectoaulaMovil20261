@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Heading, Body } from ".";
 import { colors } from "./colors";
 
-export function HomeHeader({ user, onSignOut }) {
+export function HomeHeader({ user, onOpenMenu }) {
   const insets = useSafeAreaInsets();
 
   const getGreeting = () => {
@@ -51,22 +51,19 @@ export function HomeHeader({ user, onSignOut }) {
             {userName}
           </Heading>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={onOpenMenu}
           style={{
             width: 40,
             height: 40,
-            borderRadius: 20,
-            backgroundColor: colors.primary,
+            borderRadius: 8,
+            backgroundColor: colors.surface,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Text
-            style={{ color: colors.surface, fontSize: 16, fontWeight: "700" }}
-          >
-            {userName[0]?.toUpperCase()}
-          </Text>
-        </View>
+          <Text style={{ color: colors.text, fontSize: 20 }}>☰</Text>
+        </TouchableOpacity>
       </View>
       <Body style={{ fontSize: 13, color: colors.textMuted, marginBottom: 16 }}>
         {new Date().toLocaleDateString("es-ES", {
@@ -75,19 +72,7 @@ export function HomeHeader({ user, onSignOut }) {
           month: "long",
         })}
       </Body>
-      <TouchableOpacity
-        onPress={onSignOut}
-        style={{
-          paddingVertical: 8,
-          paddingHorizontal: 12,
-          borderRadius: 8,
-          alignItems: "center",
-        }}
-      >
-        <Body style={{ color: colors.error, fontWeight: "600", fontSize: 14 }}>
-          Cerrar sesión
-        </Body>
-      </TouchableOpacity>
+      {/* Drawer menu contains the Cerrar sesión action */}
     </View>
   );
 }

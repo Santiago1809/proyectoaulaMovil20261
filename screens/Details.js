@@ -1,6 +1,7 @@
 import React from "react";
 import { View, ScrollView, Image } from "react-native";
 import { Card, Heading, Body } from "../components";
+import LoanButton from "../components/LoanButton";
 
 export default function Details({ route }) {
   const { book } = route.params || {};
@@ -54,6 +55,7 @@ export default function Details({ route }) {
             </View>
           </View>
           <Body style={{ marginTop: 12 }}>{book.description}</Body>
+          <LoanButton book={book} />
         </View>
       </Card>
     </ScrollView>

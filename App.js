@@ -25,8 +25,24 @@ function MainStackScreen() {
   return (
     <MainStack.Navigator screenOptions={{ headerShown: false }}>
       <MainStack.Screen name="Home" component={Home} />
-      <MainStack.Screen name="AddBook" component={AddBook} />
-      <MainStack.Screen name="Details" component={Details} />
+      <MainStack.Screen
+        name="AddBook"
+        component={AddBook}
+        options={{
+          headerShown: true,
+          title: "Agregar libro",
+          headerBackTitle: "Volver",
+        }}
+      />
+      <MainStack.Screen
+        name="Details"
+        component={Details}
+        options={({ route }) => ({
+          headerShown: true,
+          title: route.params?.book?.title ?? "Detalles",
+          headerBackTitle: "Volver",
+        })}
+      />
     </MainStack.Navigator>
   );
 }
