@@ -8,7 +8,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "./colors";
 import { useAuth } from "../contexts/AuthContext";
 import MenuModal from "./MenuModal";
@@ -24,7 +23,7 @@ export default function HeaderBar({ title }) {
 
   return (
     <>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
         {navigation.canGoBack() && (
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -50,7 +49,6 @@ export default function HeaderBar({ title }) {
 
 const styles = StyleSheet.create({
   header: {
-    height: 56,
     backgroundColor: colors.surface,
     flexDirection: "row",
     alignItems: "center",
@@ -58,6 +56,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+    paddingVertical: 8,
+    minHeight: 56,
   },
   backButton: {
     paddingVertical: 8,
