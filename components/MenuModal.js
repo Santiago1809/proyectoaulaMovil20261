@@ -7,12 +7,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "./colors";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function MenuModal({ visible, onClose }) {
   const navigation = useNavigation();
   const { signOut, user } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const handleNavigate = (route) => {
     navigation.navigate(route);
@@ -36,61 +38,29 @@ export default function MenuModal({ visible, onClose }) {
         >
           <TouchableWithoutFeedback>
             <View
-              style={{
-                backgroundColor: colors.surface,
-                padding: 16,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: -3 },
-                shadowOpacity: 0.12,
-                shadowRadius: 8,
-              }}
+              style={[
+                styles.menuContainer,
+                { paddingBottom: insets.bottom },
+              ]}
             >
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "700",
-                  color: colors.text,
-                  marginBottom: 6,
-                }}
-              >
-                Cuenta
-              </Text>
-              <Text style={{ color: colors.textMuted, marginBottom: 12 }}>
-                {user?.email}
-              </Text>
+              <Text style={styles.title}>Cuenta</Text>
+              <Text style={styles.email}>{user?.email}</Text>
 
               {user?.role === "admin" && (
                 <>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "600",
-                      color: colors.textMuted,
-                      marginTop: 8,
-                      marginBottom: 8,
-                    }}
-                  >
-                    Administración
-                  </Text>
+                  <Text style={styles.sectionTitle}>Administración</Text>
                   <TouchableOpacity
                     onPress={() => handleNavigate("AdminBooks")}
-                    style={{ paddingVertical: 12 }}
+                    style={styles.item}
                   >
-                    <Text style={{ color: colors.primary, fontWeight: "600", fontSize: 15 }}>
-                      Gestión de Libros
-                    </Text>
+                    <Text style={styles.itemText}>Gestión de Libros</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleNavigate("AdminLoans")}
-                    style={{ paddingVertical: 12 }}
+                    style={styles.item}
                   >
-                    <Text style={{ color: colors.primary, fontWeight: "600", fontSize: 15 }}>
-                      Gestión de Préstamos
-                    </Text>
+                    <Text style={styles.itemText}>Gestión de Préstamos</Text>
                   </TouchableOpacity>
-                  <View style={{ height: 8 }} />
                 </>
               )}
 
@@ -99,32 +69,15 @@ export default function MenuModal({ visible, onClose }) {
                   signOut();
                   onClose && onClose();
                 }}
-                style={{ paddingVertical: 12 }}
+                style={styles.item}
               >
-                <Text
-                  style={{
-                    color: colors.error,
-                    fontWeight: "600",
-                    fontSize: 15,
-                  }}
-                >
+                <Text style={[styles.itemText, { color: colors.error }]}>
                   Cerrar sesión
                 </Text>
               </TouchableOpacity>
 
-              <View style={{ height: 8 }} />
-
-              <TouchableOpacity
-                onPress={onClose}
-                style={{ paddingVertical: 12 }}
-              >
-                <Text
-                  style={{
-                    color: colors.primary,
-                    fontWeight: "600",
-                    fontSize: 15,
-                  }}
-                >
+              <TouchableOpacity onPress={onClose} style={styles.item}>
+                <Text style={[styles.itemText, { color: colors.primary }]}>
                   Cerrar
                 </Text>
               </TouchableOpacity>
@@ -135,3 +88,41 @@ export default function MenuModal({ visible, onClose }) {
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  menuContainer: {
+    backgroundColor: colors.surface,
+    padding: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.text,
+    marginBottom: 6,
+  },
+  email: {
+    color: colors.textMuted,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.textMuted,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  item: {
+    paddingVertical: 12,
+  },
+  itemText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.text,
+  },
+});

@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { View } from "react-native";
 import HeaderBar from "../components/HeaderBar";
 import BookForm from "../components/book/book-form";
 import useBooks from "../hooks/useBooks";
@@ -13,9 +13,9 @@ export default function AddBook({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <HeaderBar title="Agregar libro" />
       <BookForm onAdd={handleAdd} />
-    </SafeAreaView>
+    </View>
   );
 }
