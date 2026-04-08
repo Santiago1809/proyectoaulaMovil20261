@@ -407,8 +407,8 @@ Este documento define los tickets de trabajo desde el **Segundo Entregable** has
 
 ## Checklist de Finalización
 
-- [ ] T2-01: Pantalla Mis Préstamos implementada y navegable
-- [ ] T2-02: Estados de préstamo con badge visible en todas las vistas
+- [x] T2-01: Pantalla Mis Préstamos implementada y navegable
+- [x] T2-02: Estados de préstamo con badge visible en todas las vistas
 - [ ] T2-03: Cancelación de solicitud funcionando
 - [ ] T2-04: Búsqueda de libros implementada
 - [ ] T2-05: Filtros por categoría implementados
