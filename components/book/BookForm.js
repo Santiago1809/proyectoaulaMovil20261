@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -22,7 +22,7 @@ import { Modal } from "react-native";
 
 // Styles for new category multi-select UI (dynamic values depend on color map)
 
-export default function BookForm({ onAdd }) {
+export default function BookForm({ onAdd, onSubmit, mode = "add", initialData = null }) {
   const insets = useSafeAreaInsets();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -33,6 +33,7 @@ export default function BookForm({ onAdd }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [available, setAvailable] = useState(true);
   const [image, setImage] = useState(null);
+  const [bookId, setBookId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const maxDescriptionLength = 200;
@@ -51,28 +52,51 @@ export default function BookForm({ onAdd }) {
     }
   }
 
+  // Initialize edit mode values when provided
+  useEffect(() => {
+    if (mode === "edit" && initialData) {
+      setTitle(initialData.title || "");
+      setAuthor(initialData.author || "");
+      setDescription(initialData.description || "");
+      const cats = Array.isArray(initialData.categories)
+        ? initialData.categories
+        : initialData.category
+        ? [initialData.category]
+        : [];
+      if (cats.length > 0) {
+        setSelectedCategories(cats);
+        setCategory(cats[0]);
+      }
+      if (initialData.id) setBookId(initialData.id);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, initialData]);
+
   async function handleSubmit() {
     if (!title.trim() || !author.trim()) {
       Alert.alert("Faltan campos", "Completa el título y el autor.");
       return;
     }
     if (!image) {
-      Alert.alert("Imagen requerida", "Por favor añade una imagen de portada para el libro.");
-      return;
+      // Allow edit mode to skip image if an existing one is present
+      if (!(mode === "edit" && initialData?.image)) {
+        Alert.alert("Imagen requerida", "Por favor añade una imagen de portada para el libro.");
+        return;
+      }
     }
     setSubmitting(true);
     try {
-      await onAdd(
-        {
-          title,
-          author,
-          description,
-          categories: selectedCategories,
-          category: selectedCategories[0] || "",
-          available,
-        },
-        image ? image.base64 : null,
-      );
+      const payload = {
+        id: bookId,
+        title,
+        author,
+        description,
+        categories: selectedCategories,
+        category: selectedCategories[0] || "",
+        available,
+      };
+      const submitFn = mode === "edit" ? onSubmit : onAdd;
+      await (submitFn ? submitFn(payload, image ? image.base64 : null) : Promise.resolve());
       setTitle("");
       setAuthor("");
       setDescription("");
@@ -80,7 +104,7 @@ export default function BookForm({ onAdd }) {
       setSelectedCategories([]);
       setAvailable(true);
       setImage(null);
-      Alert.alert("Éxito", "Libro agregado correctamente.");
+      Alert.alert("Éxito", mode === "edit" ? "Libro actualizado" : "Libro agregado correctamente.");
     } catch (err) {
       Alert.alert("Error", "No se pudo agregar el libro.");
     } finally {
@@ -106,7 +130,7 @@ export default function BookForm({ onAdd }) {
         <View style={styles.headerIcon}>
           <Ionicons name="book-add" size={24} color={colors.primary} />
         </View>
-        <Text style={styles.headerTitle}>Agregar libro</Text>
+        <Text style={styles.headerTitle}>{mode === 'edit' ? 'Editar libro' : 'Agregar libro'}</Text>
         <Text style={styles.headerSubtitle}>
           Completa los datos del libro para añadirlo a la biblioteca
         </Text>
