@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Alert } from "react-native";
-import { useBooks } from "./useBooks";
+import useBooks from "./useBooks";
 
 /**
  * Hook para operaciones de administración de libros
