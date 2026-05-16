@@ -5,6 +5,7 @@ import { colors } from "../colors";
 
 export function BookItem({ item, itemSize, navigation }) {
   const [animatedValue] = useState(new Animated.Value(1));
+  const [imageError, setImageError] = useState(false);
 
   const handlePressIn = () => {
     Animated.timing(animatedValue, {
@@ -45,11 +46,12 @@ export function BookItem({ item, itemSize, navigation }) {
         <View style={styles.card}>
           {/* Book Cover */}
           <View style={[styles.coverContainer, { width: coverWidth, height: coverHeight }]}>
-            {item.image ? (
+            {item.image && !imageError ? (
               <Image
                 source={{ uri: item.image }}
                 style={[styles.coverImage, { width: coverWidth, height: coverHeight }]}
                 resizeMode="cover"
+                onError={() => setImageError(true)}
               />
             ) : (
               <View style={[styles.coverPlaceholder, { width: coverWidth, height: coverHeight }]}>
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     backgroundColor: colors.surfaceAlt,
+    overflow: "hidden",
   },
   coverImage: {
     borderTopLeftRadius: 16,

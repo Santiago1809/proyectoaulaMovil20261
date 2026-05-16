@@ -10,15 +10,10 @@ import {
   onSnapshot,
   Timestamp,
 } from "firebase/firestore";
+import { STATES } from "../constants/loans";
 import { db } from "../firebase";
 
-export const STATES = {
-  REQUESTED: "solicitado",
-  APPROVED: "aprobado",
-  DELIVERED: "entregado",
-  RETURNED: "devuelto",
-  CANCELLED: "cancelado",
-};
+export { STATES };
 
 export default function useLoans() {
   const [loading, setLoading] = useState(false);

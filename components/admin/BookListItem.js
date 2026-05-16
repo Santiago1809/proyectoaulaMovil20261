@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../colors";
@@ -9,13 +9,19 @@ import { colors } from "../colors";
  */
 export default function BookListItem({ book, onEdit, onDelete }) {
   const { title, author, image, available } = book;
+  const [imageError, setImageError] = useState(false);
 
   return (
     <View style={styles.container}>
       {/* Portada */}
       <View style={styles.coverContainer}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.cover} />
+        {image && !imageError ? (
+          <Image
+            source={{ uri: image }}
+            style={styles.cover}
+            resizeMode="cover"
+            onError={() => setImageError(true)}
+          />
         ) : (
           <View style={styles.coverPlaceholder}>
             <Ionicons name="book" size={24} color={colors.textMuted} />
@@ -67,6 +73,7 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     marginRight: 12,
+    overflow: "hidden",
   },
   cover: {
     width: 60,
