@@ -1,35 +1,51 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Platform } from "react-native";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { doc, setDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 // ────────────────────────────────────────────────────────────────────────────
-// Notification Handler — define cómo se muestran las notificaciones cuando la
-// app está en foreground. Expo llama a esto AUTOMÁTICAMENTE.
+// Safe lazy loader for expo-notifications — Expo Go NO tiene módulos nativos.
+// En vez de un import estático que crashea al bundlear, cargamos con require()
+// envuelto en try/catch. Si falla (Expo Go), todo el feature de notificaciones
+// se desactiva silenciosamente.
 // ────────────────────────────────────────────────────────────────────────────
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+let Notifications = null;
+let Device = null;
+
+try {
+  Notifications = require("expo-notifications");
+  Device = require("expo-device");
+} catch {
+  console.log("useNotifications: expo-notifications no disponible (Expo Go)");
+}
 
 // ────────────────────────────────────────────────────────────────────────────
-// Notification channels — creados una sola vez al arrancar el módulo
+// Lazy init de los module-level side effects (setNotificationHandler, channels)
 // ────────────────────────────────────────────────────────────────────────────
-if (Platform.OS === "android") {
-  Notifications.setNotificationChannelAsync("loans", {
-    name: "Préstamos",
-    importance: Notifications.AndroidImportance.HIGH,
-    vibrationPattern: [0, 250, 250, 250],
-    lightColor: "#E6F4FE",
-    description: "Notificaciones de préstamos de libros",
-  }).catch(() => {});
+let _notificationsInitialized = false;
+function ensureNotificationsInitialized() {
+  if (_notificationsInitialized || !Notifications) return;
+  _notificationsInitialized = true;
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("loans", {
+      name: "Préstamos",
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#E6F4FE",
+      description: "Notificaciones de préstamos de libros",
+    }).catch(() => {});
+  }
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -86,6 +102,11 @@ export default function useNotifications() {
   const [notification, setNotification] = useState(null);
   const userIdRef = useRef(null);
 
+  // Inicializar side effects si el módulo está disponible
+  useEffect(() => {
+    ensureNotificationsInitialized();
+  }, []);
+
   /**
    * Obtiene un identificador único para este dispositivo.
    */
@@ -122,16 +143,18 @@ export default function useNotifications() {
   /**
    * Solicita permisos de notificación y registra el device token en Firestore.
    *
-   * Usa Notifications.getDevicePushTokenAsync() en vez de
-   * @react-native-firebase/messaging.getToken() para ser compatible con Expo Go.
-   *
    * @param {string} userId - UID del usuario autenticado
    * @returns {Promise<string|null>} Device token o null si falla
    */
   const registerForPushNotifications = useCallback(
     async (userId) => {
+      if (!Notifications) {
+        console.log("useNotifications: Notifications module not available (Expo Go)");
+        return null;
+      }
+
       try {
-        if (!Device.isDevice) {
+        if (!Device?.isDevice) {
           console.log(
             "useNotifications: Push notifications require a physical device"
           );
@@ -164,10 +187,6 @@ export default function useNotifications() {
         }
 
         // ── 2. Obtener Expo Push Token ──────────────────────────────
-        // Necesitamos el Expo Push Token (ExponentPushToken[xxx]) para
-        // poder enviar notificaciones via Expo Push API.
-        // getDevicePushTokenAsync() devuelve el token nativo (FCM/APNs)
-        // que NO sirve para la Expo Push API.
         const expoProjectId = "d9fb3d85-ca52-43f7-b50b-aae7c8d42c26";
         const tokenData = await Notifications.getExpoPushTokenAsync({
           projectId: expoProjectId,
@@ -183,14 +202,6 @@ export default function useNotifications() {
 
         // ── 3. Guardar token en Firestore ──────────────────────────
         await saveTokenToFirestore(token, userId);
-
-        // ── 4. Advertencia para Expo Go en Android ─────────────────
-        if (Platform.OS === "android") {
-          console.log(
-            "useNotifications: Push notifications NOT available in Expo Go on Android. " +
-              "Use a development build (npx expo run:android) for push notifications."
-          );
-        }
 
         return token;
       } catch (error) {
@@ -208,6 +219,8 @@ export default function useNotifications() {
    * Escucha cambios de token via Expo Notifications.
    */
   useEffect(() => {
+    if (!Notifications) return;
+
     const subscription = Notifications.addPushTokenListener((tokenData) => {
       const newToken = tokenData?.data;
       if (newToken && newToken !== fcmToken) {
@@ -225,10 +238,11 @@ export default function useNotifications() {
 
   // ── Escuchar notificaciones recibidas en foreground ───────────
   useEffect(() => {
+    if (!Notifications) return;
+
     const subscription = Notifications.addNotificationReceivedListener(
       (notif) => {
         setNotification(notif);
-        // Actualizar badge count
         const badgeCount =
           notif.request.content.data?._badgeCount ?? 1;
         Notifications.setBadgeCountAsync(badgeCount).catch(() => {});
@@ -240,6 +254,8 @@ export default function useNotifications() {
 
   // ── Escuchar taps en notificaciones ──────────────────────────
   useEffect(() => {
+    if (!Notifications) return;
+
     const subscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
@@ -253,6 +269,8 @@ export default function useNotifications() {
 
   // ── Revisar si la app se abrió desde una notificación (cold start) ─
   useEffect(() => {
+    if (!Notifications) return;
+
     Notifications.getLastNotificationResponseAsync()
       .then((lastResponse) => {
         if (lastResponse?.notification?.request?.content?.data) {
@@ -278,8 +296,10 @@ export default function useNotifications() {
         const tokenRef = doc(db, "users", userId, "tokens", deviceId);
         await deleteDoc(tokenRef);
 
-        // Limpiar badge
-        await Notifications.setBadgeCountAsync(0);
+        // Limpiar badge (si el módulo está disponible)
+        if (Notifications) {
+          await Notifications.setBadgeCountAsync(0);
+        }
 
         setFcmToken(null);
         setNotification(null);
@@ -368,6 +388,11 @@ export async function sendPushNotification({ token, title, body, data = {} }) {
 // showLocalNotification — muestra una notificación local inmediata.
 // ────────────────────────────────────────────────────────────────────────────
 export async function showLocalNotification({ title, body, data = {} }) {
+  if (!Notifications) {
+    console.log("showLocalNotification: Notifications module not available");
+    return;
+  }
+
   try {
     await Notifications.scheduleNotificationAsync({
       content: {
